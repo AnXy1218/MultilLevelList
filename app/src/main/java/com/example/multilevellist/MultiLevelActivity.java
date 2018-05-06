@@ -11,8 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.bean.Chapter;
-import com.example.bean.ChapterItem;
+import com.example.bean.Area;
+import com.example.bean.AreaFactory;
+import com.example.bean.AreaItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,12 @@ public class MultiLevelActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
-    private List<Chapter> list2;
-    private List<ChapterItem> mData;
+    private List<Area> mAreas;
+    private List<AreaItem> mAreaItems;
 
     private QuesBaseAdapter listAdapter;
 
-    private TreeRecyclerViewAdapter<ChapterItem> dataAdapter;
+    private TreeRecyclerViewAdapter<AreaItem> dataAdapter;
 
     private Handler handler = new Handler();
 
@@ -44,37 +45,34 @@ public class MultiLevelActivity extends AppCompatActivity {
         type = getIntent().getIntExtra("type", 1);
 
         if (type == 1){
-            list2 = new ArrayList<>();
+            mAreas = new ArrayList<>();
 
             FlushReceiver receiver = new FlushReceiver();
-            IntentFilter filter = new IntentFilter("com.huixuexi.flush");
+            IntentFilter filter = new IntentFilter("com.example.flush");
             registerReceiver(receiver,filter);
 
             LinearLayoutManager manager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
             recyclerView.setLayoutManager(manager);
-            listAdapter = new QuesBaseAdapter(this,1,list2);
+            listAdapter = new QuesBaseAdapter(this,1,mAreas);
             recyclerView.setAdapter(listAdapter);
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     getList();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listAdapter.notifyDataSetChanged();
-                            listAdapter.notifiDataChanged();
-                        }
+                    handler.post(()->{
+                        listAdapter.notifyDataSetChanged();
+                        listAdapter.notifiDataChanged();
                     });
                 }
             },5*1000);
         }else {
-            if (mData == null){
-                mData = new ArrayList<>();
+            if (mAreaItems == null){
+                mAreaItems = new ArrayList<>();
             }
             LinearLayoutManager manager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
             recyclerView.setLayoutManager(manager);
-            dataAdapter = new TreeRecyclerViewAdapter<ChapterItem>(this,mData);
+            dataAdapter = new TreeRecyclerViewAdapter<AreaItem>(this,mAreaItems);
             recyclerView.setAdapter(dataAdapter);
             getData();
             Timer timer = new Timer();
@@ -82,11 +80,8 @@ public class MultiLevelActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     getData();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            dataAdapter.notifyDataSetChanged();
-                        }
+                    handler.post(()->{
+                        dataAdapter.notifyDataSetChanged();
                     });
                 }
             },5*1000);
@@ -94,52 +89,56 @@ public class MultiLevelActivity extends AppCompatActivity {
     }
 
     private void getList() {
-        if (list2 == null) {
-            list2 = new ArrayList<>();
+        if (mAreas == null) {
+            mAreas = new ArrayList<>();
         }
 
-        list2.clear();
+        mAreas.clear();
+        //北京市海淀区、朝阳区
+        //浙江省杭州市西湖区、滨江区
+        //陕西省西安市未央区
+        String[] bjAreaNames = new String[]{"东城区","西城区","海淀区","朝阳区","昌平区"};
+        List<Area> bjAreas = AreaFactory.createAreaList(bjAreaNames);
+        Area bjArea = AreaFactory.createArea(0,"北京市");
+        bjArea.setAreas(bjAreas);
+        mAreas.add(bjArea);
 
-        Chapter chapter = new Chapter();
-        chapter.setId(2);
-        chapter.setName("名称");
-        List<Chapter> list = new ArrayList<>();
-        list.add(chapter);
-        list.add(chapter);
+        String[] hzAreaNames = new String[]{"上城区","下城区","西湖区","滨江区","余杭区"};
+        List<Area> hzAreas = AreaFactory.createAreaList(hzAreaNames);
+        Area hzArea = AreaFactory.createArea(0,"杭州市");
+        hzArea.setAreas(hzAreas);
+        List<Area> zjAreas = new ArrayList<>();
+        zjAreas.add(hzArea);
+        Area zjArea = AreaFactory.createArea(1,"浙江省");
+        zjArea.setAreas(zjAreas);
+        mAreas.add(zjArea);
 
-        Chapter chapter1 = new Chapter();
-        chapter1.setId(1);
-        chapter1.setName("名册名册");
-        chapter1.setChapters(list);
-
-        List<Chapter> list1 = new ArrayList<>();
-        list1.add(chapter1);
-
-        Chapter chapter2 = new Chapter();
-        chapter2.setId(1);
-        chapter2.setName("名册名册");
-        chapter2.setChapters(list1);
-
-        list2.add(chapter2);
-        list2.add(chapter1);
-        list2.add(chapter);
+        String[] xaAreaNames = new String[]{"新城区","碑林区","莲湖区","雁塔区","未央区","灞桥区","阎良区","临潼区","长安区"};
+        List<Area> xaAreas = AreaFactory.createAreaList(xaAreaNames);
+        Area xaArea = AreaFactory.createArea(0,"西安市");
+        xaArea.setAreas(xaAreas);
+        List<Area> sxAreas = new ArrayList<>();
+        sxAreas.add(xaArea);
+        Area sxArea = AreaFactory.createArea(1,"陕西省");
+        sxArea.setAreas(sxAreas);
+        mAreas.add(sxArea);
     }
 
 
     private void getData() {
-        if (list2 == null) {
+        if (mAreas == null) {
             getList();
         }
 
-        if (mData == null){
-            mData= new ArrayList<>();
+        if (mAreaItems == null){
+            mAreaItems= new ArrayList<>();
         }else{
-            mData.clear();
+            mAreaItems.clear();
         }
-        for (int i = 0; i < list2.size(); i++) {
-            ChapterItem twoItem = new ChapterItem(list2.get(i),1);
+        for (int i = 0; i < mAreas.size(); i++) {
+            AreaItem twoItem = new AreaItem(mAreas.get(i),1);
 //            twoItem.setLevel(1);
-            mData.add(twoItem);
+            mAreaItems.add(twoItem);
         }
     }
 

@@ -2,14 +2,13 @@ package com.example.bean;
 
 import java.util.List;
 
-public class Chapter {
+public class Area {
     private int id;
-    private String name;
     private String title;
 
     private boolean isExpand;
 
-    private List<Chapter> chapters;
+    private List<Area> areas;
 
     public int getId() {
         return id;
@@ -17,14 +16,6 @@ public class Chapter {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getTitle() {
@@ -43,11 +34,11 @@ public class Chapter {
         isExpand = expand;
     }
 
-    public List<Chapter> getChapters() {
-        return chapters;
+    public List<Area> getAreas() {
+        return areas;
     }
 
-    public void setChapters(List<Chapter> chapters) {
-        this.chapters = chapters;
+    public void setAreas(List<Area> areas) {
+        this.areas = areas;
     }
 }

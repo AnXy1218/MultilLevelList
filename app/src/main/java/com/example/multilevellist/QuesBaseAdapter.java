@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.bean.Chapter;
+import com.example.bean.Area;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,14 +29,14 @@ public class QuesBaseAdapter extends RecyclerView.Adapter {
 
     private int mLevel;
 
-    private List<Chapter> mChapters;
+    private List<Area> mAreas;
 
     private Map<Integer,QuesBaseAdapter> mAdapterMap;
 
-    public QuesBaseAdapter(Context mContext,int level,List<Chapter> mChapters){
+    public QuesBaseAdapter(Context mContext,int level,List<Area> mAreas){
         this.mContext = mContext;
         this.mLevel = level;
-        this.mChapters = mChapters;
+        this.mAreas = mAreas;
     }
 
     public int getLevel() {
@@ -46,56 +46,135 @@ public class QuesBaseAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.ques_base_item1,parent,false);
-        return new ChapterHolder(view);
-//        if (viewType == 1){
-//            return new ChapterHolder(view);
-//        }
-//        View view2 = LayoutInflater.from(mContext).inflate(R.layout.ques_base_item2,parent,false);
-//        return new ChapterHolder2(view2);
+        if (viewType == 1){
+            View view = LayoutInflater.from(mContext).inflate(R.layout.ques_base_item1,parent,false);
+            return new AreaHolder(view);
+        }
+        if (viewType == 2){
+            View view2 = LayoutInflater.from(mContext).inflate(R.layout.ques_base_item2,parent,false);
+            return new AreaHolder2(view2);
+        }
+
+        View view3 = LayoutInflater.from(mContext).inflate(R.layout.ques_base_item3,parent,false);
+        return new AreaHolder3(view3);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Chapter chapter = mChapters.get(position);
-//        if (getItemViewType(position) == 1){
-            ChapterHolder chapterHolder = (ChapterHolder) holder;
+        Area area = mAreas.get(position);
+        if (getItemViewType(position) == 1){
+            AreaHolder areaHolder = (AreaHolder) holder;
 
-            chapterHolder.mTvChapterTitle.setText(chapter.getName());
-
-            if (chapter.getChapters() == null || chapter.getChapters().size() == 0){
-                chapterHolder.mRecyclerView.setVisibility(View.GONE);
+            areaHolder.mTvTitle.setText(area.getTitle());
+            if (area.getAreas() == null || area.getAreas().size() == 0){
+                areaHolder.mRecyclerView.setVisibility(View.GONE);
+                areaHolder.mTvSelect.setVisibility(View.GONE);
                 return;
             }
-
             if (mAdapterMap == null){
                 mAdapterMap = new HashMap<>();
             }
 
             if (!mAdapterMap.containsKey(position)){
-                chapterHolder.mRecyclerView.setVisibility(View.VISIBLE);
+                areaHolder.mRecyclerView.setVisibility(View.VISIBLE);
                 LinearLayoutManager manager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false);
-                chapterHolder.mRecyclerView.setLayoutManager(manager);
-                QuesBaseAdapter adapter = new QuesBaseAdapter(mContext,getLevel()+1,chapter.getChapters());
-                chapterHolder.mRecyclerView.setAdapter(adapter);
+                areaHolder.mRecyclerView.setLayoutManager(manager);
+                QuesBaseAdapter adapter = new QuesBaseAdapter(mContext,getLevel()+1,area.getAreas());
+                areaHolder.mRecyclerView.setAdapter(adapter);
                 mAdapterMap.put(position,adapter);
             }
 
-            if (chapter.isExpand()){
-                chapterHolder.mRecyclerView.setVisibility(View.VISIBLE);
+            if (area.isExpand()){
+                areaHolder.mRecyclerView.setVisibility(View.VISIBLE);
+                areaHolder.mTvSelect.setText("收起");
             }else{
-                chapterHolder.mRecyclerView.setVisibility(View.GONE);
+                areaHolder.mTvSelect.setText("展开");
+                areaHolder.mRecyclerView.setVisibility(View.GONE);
             }
 
-            chapterHolder.itemView.setTag(R.id.tag_first,position);
-            chapterHolder.itemView.setOnClickListener(view -> {
+            areaHolder.itemView.setTag(R.id.tag_first,position);
+            areaHolder.itemView.setOnClickListener(view -> {
                 int itemPos = (int) view.getTag(R.id.tag_first);
-                Chapter itemChapter = mChapters.get(itemPos);
-                mChapters.get(itemPos).setExpand(!itemChapter.isExpand());
+                Area itemArea = mAreas.get(itemPos);
+                mAreas.get(itemPos).setExpand(!itemArea.isExpand());
 //                notifyDataSetChanged();
-                mContext.sendBroadcast(new Intent("com.huixuexi.flush"));
+                mContext.sendBroadcast(new Intent("com.example.flush"));
             });
-//        }
+        }else if (getItemViewType(position) == 2){
+            AreaHolder2 areaHolder2 = (AreaHolder2) holder;
+
+            areaHolder2.mTvTitle.setText(area.getTitle());
+            if (area.getAreas() == null || area.getAreas().size() == 0){
+                areaHolder2.mRecyclerView.setVisibility(View.GONE);
+                areaHolder2.mTvSelect.setVisibility(View.GONE);
+                return;
+            }
+            if (mAdapterMap == null){
+                mAdapterMap = new HashMap<>();
+            }
+
+            if (!mAdapterMap.containsKey(position)){
+                areaHolder2.mRecyclerView.setVisibility(View.VISIBLE);
+                LinearLayoutManager manager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false);
+                areaHolder2.mRecyclerView.setLayoutManager(manager);
+                QuesBaseAdapter adapter = new QuesBaseAdapter(mContext,getLevel()+1,area.getAreas());
+                areaHolder2.mRecyclerView.setAdapter(adapter);
+                mAdapterMap.put(position,adapter);
+            }
+
+            if (area.isExpand()){
+                areaHolder2.mRecyclerView.setVisibility(View.VISIBLE);
+                areaHolder2.mTvSelect.setText("收起");
+            }else{
+                areaHolder2.mTvSelect.setText("展开");
+                areaHolder2.mRecyclerView.setVisibility(View.GONE);
+            }
+
+            areaHolder2.itemView.setTag(R.id.tag_first,position);
+            areaHolder2.itemView.setOnClickListener(view -> {
+                int itemPos = (int) view.getTag(R.id.tag_first);
+                Area itemArea = mAreas.get(itemPos);
+                mAreas.get(itemPos).setExpand(!itemArea.isExpand());
+//                notifyDataSetChanged();
+                mContext.sendBroadcast(new Intent("com.example.flush"));
+            });
+        }else{
+            AreaHolder3 areaHolder3 = (AreaHolder3) holder;
+
+            areaHolder3.mTvTitle.setText(area.getTitle());
+            if (area.getAreas() == null || area.getAreas().size() == 0){
+                areaHolder3.mRecyclerView.setVisibility(View.GONE);
+                areaHolder3.mTvSelect.setVisibility(View.GONE);
+                return;
+            }
+            if (mAdapterMap == null){
+                mAdapterMap = new HashMap<>();
+            }
+
+            if (!mAdapterMap.containsKey(position)){
+                areaHolder3.mRecyclerView.setVisibility(View.VISIBLE);
+                LinearLayoutManager manager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false);
+                areaHolder3.mRecyclerView.setLayoutManager(manager);
+                QuesBaseAdapter adapter = new QuesBaseAdapter(mContext,getLevel()+1,area.getAreas());
+                areaHolder3.mRecyclerView.setAdapter(adapter);
+                mAdapterMap.put(position,adapter);
+            }
+            if (area.isExpand()){
+                areaHolder3.mRecyclerView.setVisibility(View.VISIBLE);
+                areaHolder3.mTvSelect.setText("收起");
+            }else{
+                areaHolder3.mTvSelect.setText("展开");
+                areaHolder3.mRecyclerView.setVisibility(View.GONE);
+            }
+
+            areaHolder3.itemView.setTag(R.id.tag_first,position);
+            areaHolder3.itemView.setOnClickListener(view -> {
+                int itemPos = (int) view.getTag(R.id.tag_first);
+                Area itemArea = mAreas.get(itemPos);
+                mAreas.get(itemPos).setExpand(!itemArea.isExpand());
+                mContext.sendBroadcast(new Intent("com.example.flush"));
+            });
+        }
     }
 
     public void notifiDataChanged(){
@@ -111,7 +190,7 @@ public class QuesBaseAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return mChapters.size();
+        return mAreas.size();
     }
 
     @Override
@@ -122,43 +201,50 @@ public class QuesBaseAdapter extends RecyclerView.Adapter {
         return super.getItemViewType(position);
     }
 
-    class ChapterHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.ivSelect)
-        ImageView mIvSelect;
+    class AreaHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.tvTitle)
+        TextView mTvTitle;
 
-        @BindView(R.id.tvChapterName)
-        TextView mTvChapterName;
-
-        @BindView(R.id.tvChapterTitle)
-        TextView mTvChapterTitle;
-
-        @BindView(R.id.tvStart)
-        TextView mTvStart;
+        @BindView(R.id.tvSelect)
+        TextView mTvSelect;
 
         @BindView(R.id.recyclerview)
         RecyclerView mRecyclerView;
 
-        public ChapterHolder(View itemView) {
+        public AreaHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
         }
     }
 
-    class ChapterHolder2 extends RecyclerView.ViewHolder {
+    class AreaHolder2 extends RecyclerView.ViewHolder {
+        @BindView(R.id.tvTitle)
+        TextView mTvTitle;
 
-        @BindView(R.id.ivSelect)
-        ImageView mIvSelect;
+        @BindView(R.id.tvSelect)
+        TextView mTvSelect;
 
-        @BindView(R.id.tvChapterName)
-        TextView mTvChapterName;
+        @BindView(R.id.recyclerview)
+        RecyclerView mRecyclerView;
 
-        @BindView(R.id.tvChapterTitle)
-        TextView mTvChapterTitle;
+        public AreaHolder2(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this,itemView);
+        }
+    }
 
-        @BindView(R.id.tvStart)
-        TextView mTvStart;
 
-        public ChapterHolder2(View itemView) {
+    class AreaHolder3 extends RecyclerView.ViewHolder {
+        @BindView(R.id.tvTitle)
+        TextView mTvTitle;
+
+        @BindView(R.id.tvSelect)
+        TextView mTvSelect;
+
+        @BindView(R.id.recyclerview)
+        RecyclerView mRecyclerView;
+
+        public AreaHolder3(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
         }

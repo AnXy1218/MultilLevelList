@@ -13,7 +13,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:textColor="@color/textColor"
             android:text="北京市"/>
 
